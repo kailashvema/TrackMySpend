@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TrackMySpend</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <header>
@@ -15,20 +16,71 @@
   <main>
     <section class="intro">
       <h2>Welcome to TrackMySpend</h2>
-      <p>This web app helps you monitor your daily, weekly, or monthly expenses, set reminders, and understand your spending habits through clean visualizations.</p>
+      <p>This app helps you monitor expenses, set spending limits, and get alerts if you exceed them!</p>
     </section>
 
-    <section class="features">
-      <h2>Key Features</h2>
-      <ul>
-        <li>💰 Record daily expenses</li>
-        <li>📊 Visualize spending patterns</li>
-        <li>⏰ Get payment reminders</li>
-        <li>📁 Categorize income and expenses</li>
-        <li>👨‍👩‍👧‍👦 Share expenses with friends or family</li>
-      </ul>
+    <!-- New Section: Set Expense Limit -->
+    <section class="limit-section">
+      <h2>Set Your Expense Limit</h2>
+      <form id="limit-form">
+        <label for="limit">Enter Limit (₹):</label>
+        <input type="number" id="limit" placeholder="e.g., 5000" required>
+        <button type="submit">Set Limit</button>
+      </form>
+      <p id="current-limit">Current Limit: ₹0.00</p>
     </section>
 
+    <!-- Section: Add Expense -->
+    <section class="form-section">
+      <h2>Add an Expense</h2>
+      <form id="expense-form">
+        <label for="date">Date:</label>
+        <input type="date" id="date" required>
+
+        <label for="category">Category:</label>
+        <input type="text" id="category" placeholder="e.g., Food, Rent" required>
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" placeholder="e.g., Lunch at cafe" required>
+
+        <label for="amount">Amount:</label>
+        <input type="number" id="amount" placeholder="e.g., 250" required>
+
+        <button type="submit">Add Expense</button>
+      </form>
+    </section>
+
+    <!-- Section: Chart -->
+    <section class="chart-section">
+      <h2>Spending Chart</h2>
+      <canvas id="expenseChart" width="400" height="200"></canvas>
+    </section>
+
+    <!-- Section: Table -->
+    <section class="table-section">
+      <h2>Expense Table</h2>
+      <table id="expense-table" border="1" style="width: 100%; text-align: left;">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Section: Total and Warning -->
+    <section class="total-section">
+      <h2>Total Amount Spent</h2>
+      <p id="total-amount">₹0.00</p>
+      <p id="warning-message" style="color: red; font-weight: bold;"></p>
+    </section>
+
+    <!-- Section: Team -->
     <section class="team">
       <h2>Our Team</h2>
       <p>V. Kailash, M. Rakesh, CH. Meraiah, G. Bharagvi, P. Tulasi</p>
@@ -39,5 +91,86 @@
   <footer>
     <p>&copy; 2025 TrackMySpend. All rights reserved.</p>
   </footer>
+
+  <script>
+    const ctx = document.getElementById('expenseChart').getContext('2d');
+    let expenseData = {};
+    let totalAmount = 0;
+    let chart;
+    let expenseLimit = 0;
+
+    function updateChart() {
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(expenseData),
+          datasets: [{
+            label: 'Expenses by Category',
+            data: Object.values(expenseData),
+            backgroundColor: '#3498db'
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function updateTotal() {
+      document.getElementById('total-amount').textContent = `₹${totalAmount.toFixed(2)}`;
+      checkLimit();
+    }
+
+    function checkLimit() {
+      const warning = document.getElementById('warning-message');
+      if (expenseLimit > 0 && totalAmount > expenseLimit) {
+        warning.textContent = "⚠️ You have crossed your expense limit!";
+      } else {
+        warning.textContent = "";
+      }
+    }
+
+    // Set Expense Limit
+    document.getElementById('limit-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      expenseLimit = parseFloat(document.getElementById('limit').value);
+      document.getElementById('current-limit').textContent = `Current Limit: ₹${expenseLimit.toFixed(2)}`;
+      document.getElementById('limit-form').reset();
+      checkLimit();
+    });
+
+    // Add Expense
+    document.getElementById('expense-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const date = document.getElementById('date').value;
+      const category = document.getElementById('category').value;
+      const description = document.getElementById('description').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+
+      if (!expenseData[category]) {
+        expenseData[category] = 0;
+      }
+      expenseData[category] += amount;
+      totalAmount += amount;
+
+      // Add to table
+      const tableBody = document.getElementById('expense-table').querySelector('tbody');
+      const newRow = tableBody.insertRow();
+      newRow.insertCell(0).textContent = date;
+      newRow.insertCell(1).textContent = category;
+      newRow.insertCell(2).textContent = description;
+      newRow.insertCell(3).textContent = amount.toFixed(2);
+
+      updateChart();
+      updateTotal();
+      e.target.reset();
+    });
+  </script>
 </body>
 </html>
