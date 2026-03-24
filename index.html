@@ -6,6 +6,7 @@
   <title>TrackMySpend</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="./frontend.js" defer></script>
 </head>
 <body>
   <header>
@@ -66,6 +67,7 @@
             <th>Category</th>
             <th>Description</th>
             <th>Amount</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -92,7 +94,7 @@
     <p>&copy; 2025 TrackMySpend. All rights reserved.</p>
   </footer>
 
-  <script>
+  <!--<script>
     const ctx = document.getElementById('expenseChart').getContext('2d');
     let expenseData = {};
     let totalAmount = 0;
@@ -171,6 +173,6 @@
       updateTotal();
       e.target.reset();
     });
-  </script>
+  </script>-->
 </body>
 </html>
