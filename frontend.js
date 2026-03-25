@@ -84,7 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---------------------------
   async function loadExpenses() {
     try {
-      const response = await fetch("http://localhost:5000/api/expenses/all", {
+      const response = await fetch("https://trackmyspend-backend-h212.onrender.com/api/expenses/all", {
         headers: {
           "Authorization": token
         }
@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     deleteBtn.onclick = async () => {
       try {
-        await fetch(`http://localhost:5000/api/expenses/${id}`, {
+        await fetch(`https://trackmyspend-backend-h212.onrender.com/api/expenses/${id}`, {
           method: "DELETE",
           headers: {
             "Authorization": token
@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const amount = parseFloat(document.getElementById('amount').value);
 
     try {
-      const response = await fetch("http://localhost:5000/api/expenses/add", {
+      const response = await fetch("https://trackmyspend-backend-h212.onrender.com/api/expenses/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
